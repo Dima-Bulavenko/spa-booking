@@ -1,6 +1,6 @@
 from source.mixins import PrintMixin
 from source.sheet_manager import SpaSheet
-from source.validators import validate_integer_option
+from source.validators import validate_integer_option, validate_yes_no
 
 
 def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
@@ -31,10 +31,12 @@ class BasicFlow(PrintMixin):
 
     def __init__(self, sheet: SpaSheet):
         self.sheet = sheet
+        self.info = {}
+
         self.run_flow()
 
     def run_flow(self):
-        pass
+        print(f"run_flow method not implemented for {self.__class__.__name__}")
 
 
 class BookingFlow(BasicFlow):
@@ -42,6 +44,8 @@ class BookingFlow(BasicFlow):
 
     def run_flow(self):
         self.choose_service()
+        self.choose_additional_services()
+        self.choose_date_time()
 
     def choose_service(self):
         services = self.sheet.get_services("main")
@@ -55,7 +59,27 @@ class BookingFlow(BasicFlow):
             min_numb=0,
             max_numb=len(services) - 1,
         )
-        print(input_value)
+
+        # Save the chosen service to the info dictionary
+        self.info["service"] = services[int(input_value)]["name"]
+
+    def choose_additional_services(self):
+        print("Do you want to add any additional services?")
+
+        yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
+        if yes_no == "yes":
+            additional_services = self.sheet.get_services("sub")
+            self.print_options(additional_services)
+
+            input_value = input_handler(
+                "Enter additional service number:",
+                validate_integer_option,
+                min_numb=0,
+                max_numb=len(additional_services) - 1,
+            )
+
+            # Save the chosen additional service to the info dictionary
+            self.info["additional_service"] = additional_services[int(input_value)]["name"]
 
 
 class CancelFlow(BasicFlow):
