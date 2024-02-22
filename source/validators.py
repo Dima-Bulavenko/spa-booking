@@ -32,3 +32,19 @@ def validate_date(option: str):
     if date_obj < date.today():
         message = f"Your date {date_obj.isoformat()} is in the past. Please enter a future date."
         raise ValueError(message)
+
+
+def validate_yes_no(option: str):
+    """Check if the option is a 'yes' or 'no' string
+
+    Args:
+        option (str): The option to check
+
+    Raises:
+        ValueError: If the option is not 'yes' or 'no'
+    """
+
+    if option.lower() not in ["yes", "no"]:
+        message = "Please enter 'yes' or 'no'."
+        raise ValueError(message)
+
