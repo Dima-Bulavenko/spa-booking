@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
 
 class PrintMixin:
     """Class to implement common print methods"""
@@ -15,3 +20,13 @@ class PrintMixin:
 
         for index, option in enumerate(options):
             print(f"{index}. {option['name']}")
+
+    def print_time_info(self, time_ranges: list[list[datetime]]) -> None:
+        """Prints the booking times.
+
+        Args:
+            times (list[list[datetime]]): List of available times
+        """
+
+        for time_range in time_ranges:
+            print(f"{time_range[0].strftime('%H:%M')} - {time_range[-1].strftime('%H:%M')}")
