@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, time
 
 
 def validate_integer_option(option: str, min_numb: int = 0, max_numb: int = 3) -> None:
@@ -48,3 +48,23 @@ def validate_yes_no(option: str):
         message = "Please enter 'yes' or 'no'."
         raise ValueError(message)
 
+
+def validate_time(option: str, time_ranges: list[list[datetime]]) -> None:
+    """Check if the option is a time in format HH:MM and  in time_ranges list
+
+    Args:
+        option (str): The option to check
+        time_ranges (list[list[datetime]]): List of available times
+
+    Raises:
+        ValueError: If the option is not a number between 0 and the length of time_ranges list
+    """
+
+    time_obj = time.fromisoformat(option)
+
+    for time_range in time_ranges:
+        if time_range[0].time() <= time_obj <= time_range[-1].time():
+            break
+    else:
+        message = "Your time is not in the available time ranges."
+        raise ValueError(message)
