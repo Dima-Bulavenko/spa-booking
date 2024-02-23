@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, datetime, time, timedelta
 from typing import Literal
 
 from gspread import Spreadsheet
@@ -37,3 +38,21 @@ class SpaSheet:
             result = self.spa_info.get_all_records()
 
         return result
+
+    def get_service_info(self, service: str, field_name: str) -> str:
+        """Get the information for a particular service field
+
+        Args:
+            service (str): Service name
+            field_name (str): Service field to get information from
+
+        Returns:
+            str: The service information which is contained in the field_name
+        """
+        services = self.spa_info.get_all_records()
+
+        for service_data in services:
+            if service_data["name"] == service:
+                return service_data[field_name]
+        
+        return "Service not found"
