@@ -1,6 +1,6 @@
 from source.mixins import PrintMixin
 from source.sheet_manager import SpaSheet
-from source.validators import validate_integer_option, validate_yes_no
+from source.validators import validate_date, validate_integer_option, validate_time, validate_yes_no
 
 
 def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
@@ -80,6 +80,22 @@ class BookingFlow(BasicFlow):
 
             # Save the chosen additional service to the info dictionary
             self.info["additional_service"] = additional_services[int(input_value)]["name"]
+   
+    def choose_date_time(self):
+        print("Choose the date when you want to visit us.")
+
+        date_visit = input_handler("Enter the date in format YYYY-MM-DD:", validate_date)
+
+        time_ranges = self.sheet.get_available_times_for_date_and_service(date_visit, self.info["service"])
+
+        print("Choose the time when you want to visit us.")
+        self.print_time_info(time_ranges)
+        
+        time_visit = input_handler("Enter the time in format HH:MM:", validate_time, time_ranges=time_ranges)
+        
+        self.info["date"] = date_visit
+        self.info["time"] = time_visit
+        print(self.info)
 
 
 class CancelFlow(BasicFlow):
