@@ -8,4 +8,5 @@ node_modules/
 .github/
 creds.json
 *.drawio
+*.drawio.dtmp
 .vscode
