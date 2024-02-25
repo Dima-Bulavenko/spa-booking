@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date, datetime, time
 
 
@@ -67,4 +69,21 @@ def validate_time(option: str, time_ranges: list[list[datetime]]) -> None:
             break
     else:
         message = "Your time is not in the available time ranges."
+        raise ValueError(message)
+
+
+def validate_name(name: str) -> None:
+    """Check if the name is a string with length 3 to 30 characters
+    and if it contains only letters.
+
+    Args:
+        name (str): The word to check
+    """
+    
+    if not (3 <= len(name) <= 30):
+        message = "The name must contain 3 to 30 characters."
+        raise ValueError(message)
+
+    if not name.isalpha():
+        message = "The name must contain only letters."
         raise ValueError(message)
