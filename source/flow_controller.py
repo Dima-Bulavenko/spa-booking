@@ -102,13 +102,19 @@ class BookingFlow(BasicFlow):
         time_visit = input_handler("Enter the time in format HH:MM:", validate_time, time_ranges=time_ranges)
         
         self.info["date"] = date_visit
-        self.info["time"] = time_visit
+        self.info["start_time"] = time_visit
+
+        # Calculate the end time based on the start time and the duration of the service
+        duration = float(self.sheet.get_service_info(self.info["service"], "duration"))
+        end_time = datetime.combine(date.fromisoformat(date_visit),
+                                    time.fromisoformat(time_visit)) + timedelta(hours=duration)
+        self.info["end_time"] = end_time.time().isoformat("minutes")
 
     def input_credentials(self):
         print("Please enter your name")
 
         name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)", validate_name)
-        phone_number = input_handler("Enter your phone number:\n(it must contain only digits and 10 characters)",
+        phone_number = input_handler("Enter your phone number in format +353 111111111:",
                                      validate_phone_number)
         
         self.info["name"] = name
