@@ -1,6 +1,13 @@
 from source.mixins import PrintMixin
 from source.sheet_manager import SpaSheet
-from source.validators import validate_date, validate_integer_option, validate_time, validate_yes_no
+from source.validators import (
+    validate_date,
+    validate_integer_option,
+    validate_name,
+    validate_phone_number,
+    validate_time,
+    validate_yes_no,
+)
 
 
 def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
@@ -46,6 +53,7 @@ class BookingFlow(BasicFlow):
         self.choose_service()
         self.choose_additional_services()
         self.choose_date_time()
+        self.input_credentials()
 
     def choose_service(self):
         services = self.sheet.get_services("main")
@@ -95,9 +103,19 @@ class BookingFlow(BasicFlow):
         
         self.info["date"] = date_visit
         self.info["time"] = time_visit
+
+    def input_credentials(self):
+        print("Please enter your name")
+
+        name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)", validate_name)
+        phone_number = input_handler("Enter your phone number:\n(it must contain only digits and 10 characters)",
+                                     validate_phone_number)
+        
+        self.info["name"] = name
+        self.info["phone_number"] = phone_number
         print(self.info)
 
-
+        
 class CancelFlow(BasicFlow):
     """Class to manage cancellation"""
 
