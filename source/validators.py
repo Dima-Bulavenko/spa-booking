@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, time
 
+import phonenumbers
+
 
 def validate_integer_option(option: str, min_numb: int = 0, max_numb: int = 3) -> None:
     """Check if the option is a number between min_numb and max_numb inclusive
@@ -86,4 +88,25 @@ def validate_name(name: str) -> None:
 
     if not name.isalpha():
         message = "The name must contain only letters."
+        raise ValueError(message)
+
+
+def validate_phone_number(phone_number: str) -> None:
+    """Check if the phone number is valid. The number must be in the format +CCC NNNNNNNNNN
+    where C is the country code and N is the number.
+
+    Args:
+        phone_number (str): The phone number to check
+    
+    Raises:
+        ValueError: If the phone number is not valid
+    """
+    try:
+        phone_obj = phonenumbers.parse(phone_number, None)
+    except phonenumbers.phonenumberutil.NumberParseException as ex:
+        message = str(ex)
+        raise ValueError(message) from ex
+
+    if not phonenumbers.is_valid_number(phone_obj):
+        message = f"The number {phone_number} is not valid"
         raise ValueError(message)
