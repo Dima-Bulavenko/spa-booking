@@ -1,3 +1,5 @@
+from datetime import date, datetime, time, timedelta
+
 from source.mixins import PrintMixin
 from source.sheet_manager import SpaSheet
 from source.validators import (
@@ -54,6 +56,7 @@ class BookingFlow(BasicFlow):
         self.choose_additional_services()
         self.choose_date_time()
         self.input_credentials()
+        self.save_booking()
 
     def choose_service(self):
         services = self.sheet.get_services("main")
@@ -121,7 +124,16 @@ class BookingFlow(BasicFlow):
         self.info["phone_number"] = phone_number
         print(self.info)
 
+    def save_booking(self):
+        booking_data = []
+
+        bookings = self.sheet.booking_data
+        for key in bookings.get_all_records()[0]:
+            booking_data.append(self.info.get(key, ""))
         
+        bookings.append_row(booking_data)
+        
+
 class CancelFlow(BasicFlow):
     """Class to manage cancellation"""
 

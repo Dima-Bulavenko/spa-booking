@@ -85,7 +85,7 @@ class SpaSheet:
         # Loop through all bookings and get the bookings for the service and date
         for booking in all_bookings:
             booking_date_obj = date.fromisoformat(booking["date"])
-            if booking["spa_name"] == service and booking_date_obj == date_obj:
+            if booking["service"] == service and booking_date_obj == date_obj:
                 service_date_bookings.append(booking)
         
         # Sort the bookings by start time
