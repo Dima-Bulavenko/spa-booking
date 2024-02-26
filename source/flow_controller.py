@@ -204,17 +204,17 @@ class FlowController(PrintMixin):
         self.manage_options()
 
     def manage_options(self):
-        print("Please select an option:")
-        self.print_options(self.FLOW_OPTIONS)
-
-        input_value = input_handler(
-            "Enter option number:",
-            validate_integer_option,
-            min_numb=0,
-            max_numb=len(self.FLOW_OPTIONS) - 1,
-        )
-
-        self.create_flow(input_value)
+        while True:
+            print("Please select an option:")
+            self.print_options(self.FLOW_OPTIONS)
+            
+            input_value = input_handler(
+                "Enter option number:",
+                validate_integer_option,
+                min_numb=0,
+                max_numb=len(self.FLOW_OPTIONS) - 1,
+            )
+            self.create_flow(input_value)
 
     def create_flow(self, option: str):
         """Creates a flow object based on the selected option
