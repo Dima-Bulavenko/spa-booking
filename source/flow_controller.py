@@ -58,6 +58,7 @@ class BookingFlow(BasicFlow):
         self.input_credentials()
         self.submit_or_change_booking_data()
         self.save_booking()
+        self.show_success_message()
 
     def choose_service(self):
         services = self.sheet.get_services("main")
@@ -153,6 +154,14 @@ class BookingFlow(BasicFlow):
             booking_data.append(self.info.get(key, ""))
         
         bookings.append_row(booking_data)
+    
+    def show_success_message(self):
+        print("Your booking has been successfully saved.")
+        
+        print(f"Service: {self.info['service']}")
+        print(f"Date: {self.info['date']}")
+        print(f"Time: {self.info['start_time']} - {self.info['end_time']}")
+        print(f"Name: {self.info['name']}")
         
 
 class CancelFlow(BasicFlow):
