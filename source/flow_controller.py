@@ -56,6 +56,7 @@ class BookingFlow(BasicFlow):
         self.choose_additional_services()
         self.choose_date_time()
         self.input_credentials()
+        self.submit_or_change_booking_data()
         self.save_booking()
 
     def choose_service(self):
@@ -122,8 +123,28 @@ class BookingFlow(BasicFlow):
         
         self.info["name"] = name
         self.info["phone_number"] = phone_number
-        print(self.info)
-
+    
+    def submit_or_change_booking_data(self):
+        change_fields = [
+            {"name": "Service", "method": self.choose_service},
+            {"name": "Additional services", "method": self.choose_additional_services},
+            {"name": "Date and time", "method": self.choose_date_time},
+            {"name": "Name and phone number", "method": self.input_credentials},
+        ]
+        while True:
+            print("Your booking information:")
+            for key, value in self.info.items():
+                print(f"{key}: {value}")
+            print("Do you want change your booking data?")
+            yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
+            if yes_no == "yes":
+                self.print_options(change_fields)
+                field_index = input_handler("Enter the number of the field you want to change:",
+                                            validate_integer_option, min_numb=0, max_numb=len(change_fields) - 1)
+                change_fields[int(field_index)]["method"]()
+            else:
+                break
+            
     def save_booking(self):
         booking_data = []
 
