@@ -170,9 +170,32 @@ class CancelFlow(BasicFlow):
     """Class to manage cancellation"""
 
     def run_flow(self):
-        print("Cancel flow")
+        self.input_credentials()
 
+    def input_credentials(self):
+        while True:
+            print("Please enter your name and phone number with which you made the booking.")
 
+            name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)",
+                                 validate_name)
+            phone_number = input_handler("Enter your phone number in format +353 111111111:",
+                                        validate_phone_number)
+            
+            self.info["name"] = name
+            self.info["phone_number"] = phone_number
+            user_bookings = self.look_for_booking()
+            
+            if not user_bookings:
+                print(f"No bookings found for the provided name '{name}' and phone number '{phone_number}'.")
+                print("Do you want to try again?")
+                yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
+                if yes_no == "yes":
+                    continue
+                self.controller.manage_options()
+            break
+        self.info["user_bookings"] = user_bookings
+        
+        
 class AvailabilityFlow(BasicFlow):
     """Class to manage availability"""
 
