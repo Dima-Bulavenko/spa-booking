@@ -7,6 +7,7 @@ from source.validators import (
     validate_integer_option,
     validate_name,
     validate_phone_number,
+    validate_space_separated_integers,
     validate_time,
     validate_yes_no,
 )
@@ -38,8 +39,9 @@ def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
 class BasicFlow(PrintMixin):
     """Class to manage basic flow"""
 
-    def __init__(self, sheet: SpaSheet):
+    def __init__(self, sheet: SpaSheet, controller: "FlowController"):
         self.sheet = sheet
+        self.controller = controller
         self.info = {}
 
         self.run_flow()
@@ -223,4 +225,4 @@ class FlowController(PrintMixin):
             option (str): index of a flow in the FLOW_OPTIONS list
         """
 
-        self.FLOW_OPTIONS[int(option)]["object"](self.sheet)
+        self.FLOW_OPTIONS[int(option)]["object"](self.sheet, self)
