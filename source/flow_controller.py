@@ -152,7 +152,7 @@ class BookingFlow(BasicFlow):
         booking_data = []
 
         bookings = self.sheet.booking_data
-        for key in bookings.get_all_records()[0]:
+        for key in bookings.row_values(1):
             booking_data.append(self.info.get(key, ""))
         
         bookings.append_row(booking_data)
