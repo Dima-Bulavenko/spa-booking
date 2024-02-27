@@ -111,6 +111,7 @@ def validate_phone_number(phone_number: str) -> None:
         message = f"The number {phone_number} is not valid"
         raise ValueError(message)
 
+
 def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb: int = 3) -> None:
     """Check if the integers are space separated, if they are all numbers between min_numb and max_numb inclusive,
     if each number is entered only once and if there are no more than max_numb numbers.
@@ -130,6 +131,6 @@ def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb
             message = f"Please enter each number only once. {integer} is repeated."
             raise ValueError(message)
     
-    if len(list_integers) > max_numb:
+    if len(list_integers) > max_numb + 1:
         message = f"You can provide at most {max_numb} numbers. You provided {len(list_integers)}."
         raise ValueError(message)
