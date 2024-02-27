@@ -171,6 +171,7 @@ class CancelFlow(BasicFlow):
 
     def run_flow(self):
         self.input_credentials()
+        self.cancel_booking()
 
     def input_credentials(self):
         while True:
@@ -194,6 +195,30 @@ class CancelFlow(BasicFlow):
                 self.controller.manage_options()
             break
         self.info["user_bookings"] = user_bookings
+    
+    def look_for_booking(self):
+        all_bookings = self.sheet.booking_data.get_all_records()
+        user_bookings = []
+        for row_numb, booking in enumerate(all_bookings):
+            if booking["name"] == self.info["name"] and booking["phone_number"] == self.info["phone_number"]:
+                user_bookings.append({"booking": booking, "row_number": row_numb + 2})
+        print(user_bookings)
+        return user_bookings
+
+    def cancel_booking(self):
+        print("Your bookings:")
+        user_bookings = self.info["user_bookings"]
+        for index, booking_data in enumerate(user_bookings):
+            booking = booking_data["booking"]
+            print(f"{index}. {booking['service']} {booking['date']} {booking['start_time']} - {booking['end_time']}")
+        
+        booking_indexes_str = input_handler("Enter the numbers of the bookings you want to cancel separated by a space:",
+                                        validate_space_separated_integers, max_numb=len(user_bookings) - 1)
+        booking_indexes = [int(index) for index in booking_indexes_str.split()]
+
+        for index in booking_indexes:
+            self.sheet.booking_data.delete_rows(user_bookings[index]["row_number"])
+        print("Your bookings has been successfully canceled.")
         
         
 class AvailabilityFlow(BasicFlow):
