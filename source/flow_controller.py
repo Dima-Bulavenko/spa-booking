@@ -81,20 +81,7 @@ class BasicFlow(PrintMixin):
         end_time = datetime.combine(date.fromisoformat(self.info["date"]),
                                     time.fromisoformat(time_visit)) + timedelta(hours=duration)
         self.info["end_time"] = end_time.time().isoformat("minutes")
-
-
-class BookingFlow(BasicFlow):
-    """Class to manage booking"""
-
-    def run_flow(self):
-        self.choose_service()
-        self.choose_additional_services()
-        self.choose_date_time()
-        self.input_credentials()
-        self.submit_or_change_booking_data()
-        self.save_booking()
-        self.show_success_message()
-
+    
     def choose_service(self):
         services = self.sheet.get_services("main")
 
@@ -110,6 +97,19 @@ class BookingFlow(BasicFlow):
 
         # Save the chosen service to the info dictionary
         self.info["service"] = services[int(input_value)]["name"]
+
+
+class BookingFlow(BasicFlow):
+    """Class to manage booking"""
+
+    def run_flow(self):
+        self.choose_service()
+        self.choose_additional_services()
+        self.choose_date_time()
+        self.input_credentials()
+        self.submit_or_change_booking_data()
+        self.save_booking()
+        self.show_success_message()
 
     def choose_additional_services(self):
         print("Do you want to add any additional services?")
@@ -250,7 +250,7 @@ class AvailabilityFlow(BasicFlow):
     """Class to manage availability"""
 
     def run_flow(self):
-        print("Availability flow")
+        pass
 
 
 class TreatmentInfoFlow(BasicFlow):
