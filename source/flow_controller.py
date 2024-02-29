@@ -232,9 +232,10 @@ class CancelFlow(BasicFlow):
         booking_indexes_str = input_handler("Enter the numbers of the bookings you want to cancel separated by a space:",
                                         validate_space_separated_integers, max_numb=len(user_bookings) - 1)
         booking_indexes = [int(index) for index in booking_indexes_str.split()]
+        
+        for index_offset, index in enumerate(booking_indexes):
+            self.sheet.booking_data.delete_rows(user_bookings[index]["row_number"] - index_offset)
 
-        for index in booking_indexes:
-            self.sheet.booking_data.delete_rows(user_bookings[index]["row_number"])
         print("Your bookings has been successfully canceled.")
         
         
