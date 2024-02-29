@@ -141,7 +141,7 @@ class BookingFlow(BasicFlow):
                                      validate_phone_number)
         
         self.info["name"] = name
-        self.info["phone_number"] = phone_number
+        self.info["phone_number"] = formatted_phone_number(phone_number)
     
     def submit_or_change_booking_data(self):
         change_fields = [
@@ -215,8 +215,9 @@ class CancelFlow(BasicFlow):
     def look_for_booking(self):
         all_bookings = self.sheet.booking_data.get_all_records()
         user_bookings = []
+        user_phone = int(self.info["phone_number"].strip("+").replace(" ", ""))
         for row_numb, booking in enumerate(all_bookings):
-            if booking["name"] == self.info["name"] and booking["phone_number"] == self.info["phone_number"]:
+            if booking["name"] == self.info["name"] and booking["phone_number"] == user_phone:
                 user_bookings.append({"booking": booking, "row_number": row_numb + 2})
         print(user_bookings)
         return user_bookings
