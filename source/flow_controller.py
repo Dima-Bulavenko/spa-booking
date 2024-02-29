@@ -64,6 +64,23 @@ class BasicFlow(PrintMixin):
 
     def run_flow(self):
         print(f"run_flow method not implemented for {self.__class__.__name__}")
+    
+    def choose_date(self):
+        date_visit = input_handler("Enter the date in format YYYY-MM-DD:", validate_date)
+        self.info["date"] = date_visit
+    
+    def choose_time(self, time_ranges: list[list[datetime]]) -> None:
+        """Suggest the user to choose the time for the visit based on the available time ranges.
+        To use this method, the date, and service must be already chosen
+        """
+        time_visit = input_handler("Enter the time in format HH:MM:", validate_time, time_ranges=time_ranges)
+        
+        self.info["start_time"] = time_visit
+        # Calculate the end time based on the start time and the duration of the service
+        duration = float(self.sheet.get_service_info(self.info["service"], "duration"))
+        end_time = datetime.combine(date.fromisoformat(self.info["date"]),
+                                    time.fromisoformat(time_visit)) + timedelta(hours=duration)
+        self.info["end_time"] = end_time.time().isoformat("minutes")
 
 
 class BookingFlow(BasicFlow):
@@ -111,28 +128,19 @@ class BookingFlow(BasicFlow):
 
             # Save the chosen additional service to the info dictionary
             self.info["additional_service"] = additional_services[int(input_value)]["name"]
-   
+
     def choose_date_time(self):
         print("Choose the date when you want to visit us.")
 
-        date_visit = input_handler("Enter the date in format YYYY-MM-DD:", validate_date)
+        self.choose_date()
 
-        time_ranges = self.sheet.get_available_times_for_date_and_service(date_visit, self.info["service"])
+        time_ranges = self.sheet.get_available_times_for_date_and_service(self.info["date"], self.info["service"])
 
         print("Choose the time when you want to visit us.")
         self.print_time_info(time_ranges)
         
-        time_visit = input_handler("Enter the time in format HH:MM:", validate_time, time_ranges=time_ranges)
+        self.choose_time(time_ranges)
         
-        self.info["date"] = date_visit
-        self.info["start_time"] = time_visit
-
-        # Calculate the end time based on the start time and the duration of the service
-        duration = float(self.sheet.get_service_info(self.info["service"], "duration"))
-        end_time = datetime.combine(date.fromisoformat(date_visit),
-                                    time.fromisoformat(time_visit)) + timedelta(hours=duration)
-        self.info["end_time"] = end_time.time().isoformat("minutes")
-
     def input_credentials(self):
         print("Please enter your name")
 
@@ -219,7 +227,6 @@ class CancelFlow(BasicFlow):
         for row_numb, booking in enumerate(all_bookings):
             if booking["name"] == self.info["name"] and booking["phone_number"] == user_phone:
                 user_bookings.append({"booking": booking, "row_number": row_numb + 2})
-        print(user_bookings)
         return user_bookings
 
     def cancel_booking(self):
