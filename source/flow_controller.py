@@ -1,5 +1,7 @@
 from datetime import date, datetime, time, timedelta
 
+import phonenumbers
+
 from source.mixins import PrintMixin
 from source.sheet_manager import SpaSheet
 from source.validators import (
@@ -34,6 +36,20 @@ def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
         else:
             break
     return value
+
+
+def formatted_phone_number(phone_number: str) -> str:
+    """Parse and return a phone number string in E.164 format
+
+    Args:
+        phone_number_str (str): The phone number string to parse and print
+    
+    Returns:
+        str: The phone number in E.164 format
+    """
+    phone_number = phonenumbers.parse(phone_number, None)
+    formatted_phone_number = phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.E164)
+    return formatted_phone_number
 
 
 class BasicFlow(PrintMixin):
