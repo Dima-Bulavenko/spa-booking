@@ -250,9 +250,27 @@ class AvailabilityFlow(BasicFlow):
     """Class to manage availability"""
 
     def run_flow(self):
-        pass
+        self.choose_service()
+        self.choose_date()
+        self.show_result()
 
-
+    def choose_date(self):
+        print("Enter the date when you want to visit us.")
+        super().choose_date()
+    
+    def show_result(self):
+        while True:
+            time_ranges = self.sheet.get_available_times_for_date_and_service(self.info["date"], self.info["service"])
+            print(f"Available times for {self.info['service']} on {self.info['date']}:")
+            self.print_time_info(time_ranges)
+            print("Do you want to check availability for another date?")
+            yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
+            if yes_no == "yes":
+                self.choose_date()
+                continue
+            break
+          
+            
 class TreatmentInfoFlow(BasicFlow):
     """Class to manage treatment information"""
 
