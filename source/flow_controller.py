@@ -82,8 +82,8 @@ class BasicFlow(PrintMixin):
                                     time.fromisoformat(time_visit)) + timedelta(hours=duration)
         self.info["end_time"] = end_time.time().isoformat("minutes")
     
-    def choose_service(self):
-        services = self.sheet.get_services("main")
+    def choose_service(self, type: str = "main") -> None:
+        services = self.sheet.get_services(type)
 
         print("Choose a service:")
         self.print_options(services)
@@ -269,13 +269,27 @@ class AvailabilityFlow(BasicFlow):
                 self.choose_date()
                 continue
             break
-          
-            
+
+
 class TreatmentInfoFlow(BasicFlow):
     """Class to manage treatment information"""
 
     def run_flow(self):
-        print("Treatment info flow")
+        self.choose_service(type=None)
+        self.show_result()
+        
+    def show_result(self):
+        for service in self.sheet.spa_info.get_all_records():
+            if service["name"] == self.info["service"]:
+                print(f"Name: {service['name']}")
+                print(f"Duration: {service['duration']} hours")
+                print(f"Price: {service['price']} EUR")
+                print(f"Description: {service['description']}")
+                break
+        print("Do you want to check information for another treatment?")
+        yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
+        if yes_no == "yes":
+            self.run_flow()
 
 
 class FlowController(PrintMixin):
