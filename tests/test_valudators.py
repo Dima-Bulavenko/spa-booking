@@ -9,6 +9,7 @@ from source.validators import (
     validate_integer_option,
     validate_name,
     validate_phone_number,
+    validate_space_separated_integers,
     validate_time,
     validate_yes_no,
 )
@@ -256,3 +257,63 @@ class ValidatePhoneNumber(TestCase):
             validate_phone_number(data)
         
         self.assertEqual(str(context.exception), massage)
+
+
+class ValidateSpaceSeparatedIntegers(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.min_numb = 0
+        cls.max_numb = 3
+    
+    def test_valid_integers(self):
+        data = "0 1 2 3"
+        result = validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertIsNone(result)
+    
+    def test_big_integer(self):
+        data = "0 1 2 4"
+        message = f"Please enter a number between {self.min_numb} and {self.max_numb} inclusive."
+
+        with self.assertRaises(ValueError) as context:
+            validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_small_integer(self):
+        data = "-1 1 2 4"
+        message = f"Please enter a number between {self.min_numb} and {self.max_numb} inclusive."
+
+        with self.assertRaises(ValueError) as context:
+            validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_not_integer(self):
+        data = "1 2 3 a"
+        message = "invalid literal for int() with base 10: 'a'"
+
+        with self.assertRaises(ValueError) as context:
+            validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_same_integers(self):
+        same_int = 3
+        data = f"1 2 3 {same_int}"
+        message = f"Please enter each number only once. {same_int} is repeated."
+
+        with self.assertRaises(ValueError) as context:
+            validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_tricky_same_integers(self):
+        same_int = 3
+        data = f"1 2 3 {same_int} 0{same_int}"
+        message = f"Please enter each number only once. {same_int} is repeated."
+
+        with self.assertRaises(ValueError) as context:
+            validate_space_separated_integers(data, self.min_numb, self.max_numb)
+        
+        self.assertEqual(str(context.exception), message)
