@@ -4,7 +4,7 @@ from unittest import TestCase
 # Use for mocking date.today https://stackoverflow.com/questions/4481954/trying-to-mock-datetime-date-today-but-not-working
 from freezegun import freeze_time
 
-from source.validators import validate_date, validate_integer_option, validate_time, validate_yes_no
+from source.validators import validate_date, validate_integer_option, validate_name, validate_time, validate_yes_no
 
 
 class ValidateIntegerOption(TestCase):
@@ -171,6 +171,37 @@ class ValidateTime(TestCase):
         
         self.assertEqual(str(context.exception), message)
 
-        
 
+class ValidateName(TestCase):
+    def test_valid_name(self):
+        result = validate_name("John")
         
+        self.assertIsNone(result)
+    
+    def test_name_too_short(self):
+        name = "Jo"
+        message = "The name must contain 3 to 30 characters."
+
+        with self.assertRaises(ValueError) as context:
+            validate_name(name)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_name_too_long(self):
+        name = "J" * 31
+        message = "The name must contain 3 to 30 characters."
+        
+        with self.assertRaises(ValueError) as context:
+            validate_name(name)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_name_not_alpha(self):
+        data = ["John1", "Jon Doe", "Jon@32", "Jon-"]
+        message = "The name must contain only letters."
+        
+        for name in data:
+            with self.assertRaises(ValueError) as context:
+                validate_name(name)
+        
+            self.assertEqual(str(context.exception), message)
