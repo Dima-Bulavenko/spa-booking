@@ -1,11 +1,10 @@
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from unittest import TestCase
-from unittest.mock import patch
 
 # Use for mocking date.today https://stackoverflow.com/questions/4481954/trying-to-mock-datetime-date-today-but-not-working
 from freezegun import freeze_time
 
-from source.validators import validate_date, validate_integer_option, validate_yes_no
+from source.validators import validate_date, validate_integer_option, validate_time, validate_yes_no
 
 
 class ValidateIntegerOption(TestCase):
@@ -119,3 +118,59 @@ class ValidateYesNo(TestCase):
             validate_yes_no("invalid-option")
         
         self.assertEqual(str(context.exception), message)
+
+
+class ValidateTime(TestCase):
+    def setUp(self):
+        date_obj = date(1999, 12, 31)
+        self.time_ranges = [
+            [datetime.combine(date_obj, time(8)), datetime.combine(date_obj, time(9))],
+            [datetime.combine(date_obj, time(15)), datetime.combine(date_obj, time(16))],
+            [datetime.combine(date_obj, time(17)), datetime.combine(date_obj, time(20))],
+        ]
+    
+    def test_valid_time(self):
+        data = '08:30'
+        result = validate_time(data, self.time_ranges)
+
+        self.assertIsNone(result)
+    
+    def test_time_not_in_range(self):
+        data = '10:00'
+        message = "Your time is not in the available time ranges."
+
+        with self.assertRaises(ValueError) as context:
+            validate_time(data, self.time_ranges)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_invalid_hour(self):
+        data = "25:00"
+        message = "hour must be in 0..23"
+        
+        with self.assertRaises(ValueError) as context:
+            validate_time(data, self.time_ranges)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_invalid_minute(self):
+        data = "23:60"
+        message = "minute must be in 0..59"
+        
+        with self.assertRaises(ValueError) as context:
+            validate_time(data, self.time_ranges)
+        
+        self.assertEqual(str(context.exception), message)
+    
+    def test_invalid_time(self):
+        data = "invalid-time"
+        message = f"Invalid isoformat string: '{data}'"
+
+        with self.assertRaises(ValueError) as context:
+            validate_time(data, self.time_ranges)
+        
+        self.assertEqual(str(context.exception), message)
+
+        
+
+        
