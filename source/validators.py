@@ -131,7 +131,3 @@ def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb
         if list_integers.count(integer) > 1:
             message = f"Please enter each number only once. {integer} is repeated."
             raise ValueError(message)
-
-    if len(list_integers) > max_numb + 1:
-        message = f"You can provide at most {max_numb + 1} numbers. You provided {len(list_integers)}."
-        raise ValueError(message)
