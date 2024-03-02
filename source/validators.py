@@ -124,13 +124,14 @@ def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb
     Raises:
         ValueError: If the integers are not space separated and if they are not all numbers between min_numb and max_numb inclusive
     """
-    list_integers = integers.split()
+    list_integers = [int(i) for i in integers.split()]
+    
     for integer in list_integers:
         validate_integer_option(integer, min_numb, max_numb)
-        if integers.count(integer) > 1:
+        if list_integers.count(integer) > 1:
             message = f"Please enter each number only once. {integer} is repeated."
             raise ValueError(message)
-    
+
     if len(list_integers) > max_numb + 1:
-        message = f"You can provide at most {max_numb} numbers. You provided {len(list_integers)}."
+        message = f"You can provide at most {max_numb + 1} numbers. You provided {len(list_integers)}."
         raise ValueError(message)
