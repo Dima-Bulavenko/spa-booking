@@ -5,7 +5,7 @@ from unittest.mock import patch
 # Use for mocking date.today https://stackoverflow.com/questions/4481954/trying-to-mock-datetime-date-today-but-not-working
 from freezegun import freeze_time
 
-from source.validators import validate_date, validate_integer_option
+from source.validators import validate_date, validate_integer_option, validate_yes_no
 
 
 class ValidateIntegerOption(TestCase):
@@ -97,5 +97,25 @@ class ValidateDate(TestCase):
 
         with self.assertRaises(ValueError) as context:
             validate_date(data)
+        
+        self.assertEqual(str(context.exception), message)
+
+
+class ValidateYesNo(TestCase):
+    def test_valid_yes(self):
+        result = validate_yes_no("yes")
+        
+        self.assertIsNone(result)
+
+    def test_valid_no(self):
+        result = validate_yes_no("no")
+        
+        self.assertIsNone(result)
+
+    def test_invalid_option(self):
+        message = "Please enter 'yes' or 'no'."
+
+        with self.assertRaises(ValueError) as context:
+            validate_yes_no("invalid-option")
         
         self.assertEqual(str(context.exception), message)
