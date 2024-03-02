@@ -4,7 +4,14 @@ from unittest import TestCase
 # Use for mocking date.today https://stackoverflow.com/questions/4481954/trying-to-mock-datetime-date-today-but-not-working
 from freezegun import freeze_time
 
-from source.validators import validate_date, validate_integer_option, validate_name, validate_time, validate_yes_no
+from source.validators import (
+    validate_date,
+    validate_integer_option,
+    validate_name,
+    validate_phone_number,
+    validate_time,
+    validate_yes_no,
+)
 
 
 class ValidateIntegerOption(TestCase):
@@ -205,3 +212,47 @@ class ValidateName(TestCase):
                 validate_name(name)
         
             self.assertEqual(str(context.exception), message)
+
+
+class ValidatePhoneNumber(TestCase):
+    def test_valid_phone_number(self):
+        data = "+353 111111111"
+        result = validate_phone_number(data)
+        
+        self.assertIsNone(result)
+    
+    def test_long_number(self):
+        data = "+420 1111111111"
+        massage = f"The number {data} is not valid"
+        
+        with self.assertRaises(ValueError) as context:
+            validate_phone_number(data)
+
+        self.assertEqual(str(context.exception), massage)
+    
+    def test_short_number(self):
+        data = "+420 11111111"
+        massage = f"The number {data} is not valid"
+
+        with self.assertRaises(ValueError) as context:
+            validate_phone_number(data)
+        
+        self.assertEqual(str(context.exception), massage)
+    
+    def test_invalid_country_code(self):
+        data = "420 111111111"
+        massage = "(0) Missing or invalid default region."
+
+        with self.assertRaises(ValueError) as context:
+            validate_phone_number(data)
+        
+        self.assertEqual(str(context.exception), massage)
+    
+    def test_invalid_characters(self):
+        data = "+420 1111111a1"
+        massage = f"The number {data} is not valid"
+
+        with self.assertRaises(ValueError) as context:
+            validate_phone_number(data)
+        
+        self.assertEqual(str(context.exception), massage)
