@@ -10,3 +10,4 @@ creds.json
 *.drawio
 *.drawio.dtmp
 .vscode
+.coverage
