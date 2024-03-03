@@ -9,7 +9,53 @@ SPA_INFO = [
             {"name": "service3", "type": "main", "description": "description3", "price": "30", "duration": "3"},
             {"name": "service4", "type": "sub", "description": "description4", "price": "40", "duration": "4"},
         ]
-BOOKING_DATA = []
+BOOKING_DATA = [
+            {
+                "service": "service1",
+                "name": "Den",
+                "phone_number":353111111111,
+                "start_time": "08:00",
+                "end_time": "10:00",
+                "date": "2024-02-26",
+                "additional_service": "additional_service1",
+            },
+            {
+                "service": "service1",
+                "name": "John",
+                "phone_number":353222222222,
+                "start_time": "10:00",
+                "end_time": "12:00",
+                "date": "2024-02-26",
+                "additional_service": "additional_service2",
+            },
+            {
+                "service": "service3",
+                "name": "Jane",
+                "phone_number":353333333333,
+                "start_time": "12:00",
+                "end_time": "15:00",
+                "date": "2024-02-26",
+                "additional_service": "additional_service3",
+            },
+            {
+                "service": "service4",
+                "name": "Den",
+                "phone_number":353111111111,
+                "start_time": "15:00",
+                "end_time": "19:00",
+                "date": "2024-02-26",
+                "additional_service": "additional_service4",
+            },
+            {
+                "service": "service1",
+                "name": "John",
+                "phone_number":353222222222,
+                "start_time": "19:00",
+                "end_time": "21:00",
+                "date": "2024-02-26",
+                "additional_service": "additional_service1",
+            },
+]
 WORKSHEET_NAMES_DATA = {"spa_info": SPA_INFO, "booking_data": BOOKING_DATA}
 
 
@@ -30,6 +76,7 @@ class TestSpaSheet(TestCase):
         self.mock_spreadsheet = MockSpreadsheet()
         self.sheet = SpaSheet(self.mock_spreadsheet)
         self.services = SPA_INFO
+        self.bookings = BOOKING_DATA
 
     def test_init_(self):
         for worksheet_name in self.worksheet_names:
@@ -57,3 +104,17 @@ class TestSpaSheet(TestCase):
         
         self.assertEqual(result, [])
     
+    def test_get_service_info(self):
+        service = "service1"
+        field_name = "description"
+        result = self.sheet.get_service_info(service, field_name)
+
+        self.assertEqual(result, "description1")
+
+    def test_service_not_found(self):
+        service = "invalid_service"
+        field_name = "description"
+        message = "Service not found"
+        result = self.sheet.get_service_info(service, field_name)
+
+        self.assertEqual(result, message)
