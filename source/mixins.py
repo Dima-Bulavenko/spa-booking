@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.padding import Padding
+from rich.panel import Panel
 from rich.text import Text
 from rich.theme import Theme
 
@@ -50,3 +51,12 @@ class PrintMixin:
 
         for time_range in time_ranges:
             print(f"{time_range[0].strftime('%H:%M')} - {time_range[-1].strftime('%H:%M')}")
+    
+    def print_suggestion(self, suggestion: str) -> None:
+        """Prints the suggestion message.
+
+        Args:
+            suggestion (str): The suggestion message
+        """
+        message = Panel.fit(Text(suggestion, style="info"))
+        console.print(message)
