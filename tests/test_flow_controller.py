@@ -1,7 +1,9 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
-from source.flow_controller import input_handler
+import phonenumbers
+
+from source.flow_controller import formatted_phone_number, input_handler
 
 
 @patch("source.flow_controller.input")
@@ -32,3 +34,16 @@ class InputHandler(TestCase):
         mock_validator.assert_has_calls([call(invalid_data), call(data)])
         mock_print.assert_called_once_with(f"Invalid input: {exception_message}")
         self.assertEqual(result, data)
+
+
+class FormattedPhoneNumber(TestCase):
+    def test_valid_phone_number(self):
+        phone_number = "+359 123456789"
+        result = formatted_phone_number(phone_number)
+        self.assertEqual(result, "+359123456789")
+
+    def test_invalid_phone_number(self):
+        phone_number = "359 123456789"
+        with self.assertRaises(phonenumbers.phonenumberutil.NumberParseException) as err:
+            formatted_phone_number(phone_number)
+        self.assertEqual(str(err.exception), "(0) Missing or invalid default region.")
