@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 print_theme = Theme({
     "options": "green",
     "error": "red",
-    "info": "blue",
+    "info": "blue bold",
 })
 
 console = Console(theme=print_theme)
@@ -39,7 +39,7 @@ class PrintMixin:
             message.append(index_text)
             message.append(option_text)
 
-        console.print(Padding(message, 1))
+        console.print(Padding(message, (0, 2)))
 
     def print_time_info(self, time_ranges: list[list[datetime]]) -> None:
         """Prints the booking times.
