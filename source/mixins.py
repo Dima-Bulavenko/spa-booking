@@ -2,8 +2,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from rich.console import Console
+from rich.padding import Padding
+from rich.text import Text
+from rich.theme import Theme
+
 if TYPE_CHECKING:
     from datetime import datetime
+
+
+print_theme = Theme({
+    "options": "green",
+    "error": "red",
+    "info": "blue",
+})
+
+console = Console(theme=print_theme)
 
 
 class PrintMixin:
