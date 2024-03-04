@@ -32,8 +32,14 @@ class PrintMixin:
             options (list[dict]): List of options
         """
 
+        message = Text()
         for index, option in enumerate(options):
-            print(f"{index}. {option['name']}")
+            index_text = Text(f"{index}. ", style="info")
+            option_text = Text(f"{option['name']}\n", style="options")
+            message.append(index_text)
+            message.append(option_text)
+
+        console.print(Padding(message, 1))
 
     def print_time_info(self, time_ranges: list[list[datetime]]) -> None:
         """Prints the booking times.
