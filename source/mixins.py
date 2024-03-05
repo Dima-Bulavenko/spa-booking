@@ -51,9 +51,13 @@ class PrintMixin:
             times (list[list[datetime]]): List of available times
         """
 
+        table = Table("Start time", "End time", title=Text("Available times", style="info"))
         for time_range in time_ranges:
-            print(f"{time_range[0].strftime('%H:%M')} - {time_range[-1].strftime('%H:%M')}")
-    
+            start_time = Text(time_range[0].strftime("%H:%M"), style="options")
+            end_time = Text(time_range[-1].strftime("%H:%M"), style="options")
+            table.add_row(start_time, end_time, end_section=True)
+        console.print(Padding(table, (1, 0)))
+
     def print_suggestion(self, suggestion: str) -> None:
         """Prints the suggestion message.
 

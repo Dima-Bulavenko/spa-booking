@@ -181,6 +181,7 @@ class BookingFlow(BasicFlow):
             self.print_suggestion("Do you want change your booking data?")
             yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
             if yes_no == "yes":
+                self.print_suggestion("Choose the field you want to change:")
                 self.print_options(change_fields)
                 field_index = input_handler("Enter the number of the field you want to change:",
                                             validate_integer_option, min_numb=0, max_numb=len(change_fields) - 1)
