@@ -1,8 +1,14 @@
 from datetime import date, datetime, time, timedelta
+from time import sleep
 
 import phonenumbers
+from rich import print
+from rich.align import Align
+from rich.padding import Padding
+from rich.panel import Panel
+from rich.text import Text
 
-from source.mixins import PrintMixin
+from source.mixins import PrintMixin, console
 from source.sheet_manager import SpaSheet
 from source.validators import (
     validate_date,
@@ -97,6 +103,15 @@ class BasicFlow(PrintMixin):
 
         # Save the chosen service to the info dictionary
         self.info["service"] = services[int(input_value)]["name"]
+    
+    def show_success_message(self, message: str):
+        text = Text(message, justify="center", style="info")
+        panel = Panel(text)
+        aligned_panel = Align.center(panel)
+        console.print(aligned_panel)
+        console.print(Align.center(Text("You will be taken to main menu", style="option")))
+        sleep(4)
+        console.clear()
 
 
 class BookingFlow(BasicFlow):
