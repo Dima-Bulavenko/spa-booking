@@ -79,3 +79,18 @@ class PrintMixin:
             data = Text(value, style="options")
             table.add_row(name, data, end_section=True)
         console.print(Padding(table, (1, 0)))
+    
+    def print_user_bookings(self, bookings: list[dict]) -> None:
+        """Prints the user bookings.
+
+        Args:
+            user_bookings (list[dict]): List of user bookings
+        """
+        messages = []
+        for index, booking_data in enumerate(bookings):
+            booking = booking_data["booking"]
+            message = Text(f"{index}. {booking['service']} on {booking['date']} at {booking['start_time']}",
+                           style="options")
+            messages.append(message)
+        messages = Padding(Text("\n").join(messages), (0, 2, 0, 2))
+        console.print(messages)
