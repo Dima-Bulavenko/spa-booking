@@ -60,3 +60,16 @@ class PrintMixin:
         """
         message = Panel.fit(Text(suggestion, style="info"))
         console.print(message)
+    
+    def print_booking_info(self, booking_info: dict) -> None:
+        """Prints the booking information.
+
+        Args:
+            booking_info (dict): The booking information
+        """
+        table = Table(title=Text("Booking information", style="info"), show_header=False)
+        for key, value in booking_info.items():
+            name = Text(f"{key}: ", style="info")
+            data = Text(value, style="options")
+            table.add_row(name, data, end_section=True)
+        console.print(Padding(table, (1, 0)))
