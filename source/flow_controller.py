@@ -34,12 +34,14 @@ def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
         str: The validated user input
     """
     while True:
-        value = input(prompt + "\n")
+        value = console.input(f"[bold purple]{prompt}" + "\n")
         try:
             validator(value, *args, **kwargs)
         except ValueError as e:
-            print(f"Invalid input: {e}")
+            message = Padding(Panel.fit(Text(f"Invalid input: {e}", style="error")), (0, 0, 1, 0))
+            console.print(message)
         else:
+            console.clear()
             break
     return value
 
@@ -88,10 +90,10 @@ class BasicFlow(PrintMixin):
                                     time.fromisoformat(time_visit)) + timedelta(hours=duration)
         self.info["end_time"] = end_time.time().isoformat("minutes")
     
-    def choose_service(self, type: str = "main") -> None:
-        services = self.sheet.get_services(type)
+    def choose_service(self, type_str: str = "main") -> None:
+        services = self.sheet.get_services(type_str)
 
-        print("Choose a service:")
+        self.print_suggestion("Choose a service:")
         self.print_options(services)
 
         input_value = input_handler(
@@ -101,7 +103,6 @@ class BasicFlow(PrintMixin):
             max_numb=len(services) - 1,
         )
 
-        # Save the chosen service to the info dictionary
         self.info["service"] = services[int(input_value)]["name"]
     
     def show_success_message(self, message: str):
@@ -124,14 +125,15 @@ class BookingFlow(BasicFlow):
         self.input_credentials()
         self.submit_or_change_booking_data()
         self.save_booking()
-        self.show_success_message()
+        self.show_success_message("Your booking has been successfully saved.")
 
     def choose_additional_services(self):
-        print("Do you want to add any additional services?")
+        self.print_suggestion("Do you want to add any additional services?")
 
         yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
         if yes_no == "yes":
             additional_services = self.sheet.get_services("sub")
+            self.print_suggestion("Choose additional service:")
             self.print_options(additional_services)
 
             input_value = input_handler(
@@ -145,19 +147,19 @@ class BookingFlow(BasicFlow):
             self.info["additional_service"] = additional_services[int(input_value)]["name"]
 
     def choose_date_time(self):
-        print("Choose the date when you want to visit us.")
+        self.print_suggestion("Choose the date when you want to visit us.")
 
         self.choose_date()
 
         time_ranges = self.sheet.get_available_times_for_date_and_service(self.info["date"], self.info["service"])
 
-        print("Choose the time when you want to visit us.")
+        self.print_suggestion("Choose the time when you want to visit us.")
         self.print_time_info(time_ranges)
         
         self.choose_time(time_ranges)
         
     def input_credentials(self):
-        print("Please enter your name")
+        self.print_suggestion("Please enter your name")
 
         name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)", validate_name)
         phone_number = input_handler("Enter your phone number in format +353 111111111:",
@@ -174,10 +176,9 @@ class BookingFlow(BasicFlow):
             {"name": "Name and phone number", "method": self.input_credentials},
         ]
         while True:
-            print("Your booking information:")
-            for key, value in self.info.items():
-                print(f"{key}: {value}")
-            print("Do you want change your booking data?")
+            self.print_suggestion("Your booking information:")
+            self.print_booking_info(self.info)
+            self.print_suggestion("Do you want change your booking data?")
             yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
             if yes_no == "yes":
                 self.print_options(change_fields)
@@ -195,14 +196,6 @@ class BookingFlow(BasicFlow):
             booking_data.append(self.info.get(key, ""))
         
         bookings.append_row(booking_data)
-    
-    def show_success_message(self):
-        print("Your booking has been successfully saved.")
-        
-        print(f"Service: {self.info['service']}")
-        print(f"Date: {self.info['date']}")
-        print(f"Time: {self.info['start_time']} - {self.info['end_time']}")
-        print(f"Name: {self.info['name']}")
         
 
 class CancelFlow(BasicFlow):
@@ -327,7 +320,7 @@ class FlowController(PrintMixin):
 
     def manage_options(self):
         while True:
-            print("Please select an option:")
+            self.print_suggestion("Please select an option")
             self.print_options(self.FLOW_OPTIONS)
             
             input_value = input_handler(

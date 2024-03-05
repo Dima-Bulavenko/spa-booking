@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
 from rich.theme import Theme
 
@@ -16,6 +17,7 @@ print_theme = Theme({
     "options": "green",
     "error": "red",
     "info": "blue bold",
+    "input": "purple",
 })
 
 console = Console(theme=print_theme)
@@ -40,7 +42,7 @@ class PrintMixin:
             message.append(index_text)
             message.append(option_text)
 
-        console.print(Padding(message, (0, 2)))
+        console.print(Padding(message, (0, 2, 0, 2)))
 
     def print_time_info(self, time_ranges: list[list[datetime]]) -> None:
         """Prints the booking times.
