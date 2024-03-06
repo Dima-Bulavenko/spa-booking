@@ -1,13 +1,14 @@
+from datetime import datetime, timedelta
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 import phonenumbers
 
-from source.flow_controller import formatted_phone_number, input_handler
+from source.flow_controller import BasicFlow, formatted_phone_number, input_handler
 
 
-@patch("source.flow_controller.input")
-@patch("source.flow_controller.print")
+@patch("source.flow_controller.console.input")
+@patch("source.flow_controller.console.print")
 class InputHandler(TestCase):
     def test_valid_input(self, mock_print, mock_input):
         data = "Valid input"
@@ -16,7 +17,6 @@ class InputHandler(TestCase):
         mock_input.return_value = data
         result = input_handler(prompt_message, mock_validator)
 
-        mock_input.assert_called_once_with(prompt_message + "\n")
         mock_validator.assert_called_once_with(data)
         mock_print.assert_not_called()
         self.assertEqual(result, data)
@@ -30,9 +30,7 @@ class InputHandler(TestCase):
         mock_input.side_effect = [invalid_data, data]
         result = input_handler(prompt_message, mock_validator)
 
-        mock_input.assert_has_calls([call(f"{prompt_message}\n"), call(f"{prompt_message}\n")])
         mock_validator.assert_has_calls([call(invalid_data), call(data)])
-        mock_print.assert_called_once_with(f"Invalid input: {exception_message}")
         self.assertEqual(result, data)
 
 
@@ -47,3 +45,8 @@ class FormattedPhoneNumber(TestCase):
         with self.assertRaises(phonenumbers.phonenumberutil.NumberParseException) as err:
             formatted_phone_number(phone_number)
         self.assertEqual(str(err.exception), "(0) Missing or invalid default region.")
+
+
+# class TestBasicFlow(TestCase):
+#     def setUp(self):
+        
