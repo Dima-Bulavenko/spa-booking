@@ -311,7 +311,7 @@ class FlowController(PrintMixin):
         self.sheet = sheet
         self.current_flow = None
 
-        print("Welcome to the Spa Booking System")
+        self.print_suggestion("Welcome to the Spa Booking System")
 
         self.manage_options()
 

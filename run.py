@@ -1,9 +1,9 @@
 import gspread
 from google.oauth2.service_account import Credentials
 
-from source.flow_controler import FlowController
+from source.flow_controller import FlowController
+from source.mixins import console
 from source.sheet_manager import SpaSheet
-from source.validators import validate_integer_option
 
 SCOPE = (
     "https://www.googleapis.com/auth/spreadsheets",
@@ -17,7 +17,8 @@ SHEET = GSPREAD_CLIENT.open("spa_booking")
 
 
 def main():
-    sheet = SpaSheet(SHEET)
+    with console.status("Loading Spa...", spinner="earth"):
+        sheet = SpaSheet(SHEET)
     FlowController(sheet)
 
 
