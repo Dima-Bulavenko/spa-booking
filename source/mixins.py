@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from rich.align import Align
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
@@ -94,3 +95,25 @@ class PrintMixin:
             messages.append(message)
         messages = Padding(Text("\n").join(messages), (0, 2, 0, 2))
         console.print(messages)
+
+    def print_service_info(self, service: dict):
+        """Prints the service information.
+
+        Args:
+            service (dict): The service information
+        """
+        name = Padding(Panel(Text(f"{service['name']}", justify="center", style="info"),title="Name"),
+                       (0, 0, 1, 0))
+        console.print(name)
+        duration = Padding(Panel(Text(f"{service['duration']} hours", justify="center", style="info"),
+                                 title="Duration"),
+                           (0, 0, 1, 0))
+        console.print(duration)
+        price = Padding(Panel(Text(f"{service['price']} euro", justify="center", style="info"),
+                      title="Price"),
+                      (0, 0, 1, 0))
+        console.print(price)
+        description = Padding(Panel(Text(f"{service['description']}", justify="center", style="info"),
+                            title="Description"),
+                            (0, 0, 1, 0))
+        console.print(description)
