@@ -205,13 +205,16 @@ class CancelFlow(BasicFlow):
     def run_flow(self):
         self.input_credentials()
         self.cancel_booking()
+        self.show_success_message("Your bookings has been successfully canceled.")
 
     def input_credentials(self):
         while True:
-            print("Please enter your name and phone number with which you made the booking.")
+            self.print_suggestion("Please enter your name with which you made the booking.")
 
             name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)",
                                  validate_name)
+            
+            self.print_suggestion("Please enter your phone number with which you made the booking.")
             phone_number = input_handler("Enter your phone number in format +353 111111111:",
                                         validate_phone_number)
             
@@ -220,8 +223,8 @@ class CancelFlow(BasicFlow):
             user_bookings = self.look_for_booking()
             
             if not user_bookings:
-                print(f"No bookings found for the provided name '{name}' and phone number '{phone_number}'.")
-                print("Do you want to try again?")
+                self.print_suggestion(f"No bookings found for the provided name '{name}' and phone number '{phone_number}'.")
+                self.print_suggestion("Do you want to try again?")
                 yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
                 if yes_no == "yes":
                     continue
@@ -239,11 +242,9 @@ class CancelFlow(BasicFlow):
         return user_bookings
 
     def cancel_booking(self):
-        print("Your bookings:")
+        self.print_suggestion("Your bookings:")
         user_bookings = self.info["user_bookings"]
-        for index, booking_data in enumerate(user_bookings):
-            booking = booking_data["booking"]
-            print(f"{index}. {booking['service']} {booking['date']} {booking['start_time']} - {booking['end_time']}")
+        self.print_user_bookings(user_bookings)
         
         booking_indexes_str = input_handler("Enter the numbers of the bookings you want to cancel separated by a space:",
                                         validate_space_separated_integers, max_numb=len(user_bookings) - 1)
@@ -251,8 +252,6 @@ class CancelFlow(BasicFlow):
         
         for index_offset, index in enumerate(booking_indexes):
             self.sheet.booking_data.delete_rows(user_bookings[index]["row_number"] - index_offset)
-
-        print("Your bookings has been successfully canceled.")
         
         
 class AvailabilityFlow(BasicFlow):
@@ -264,15 +263,15 @@ class AvailabilityFlow(BasicFlow):
         self.show_result()
 
     def choose_date(self):
-        print("Enter the date when you want to visit us.")
+        self.print_suggestion("Enter the date when you want to visit us.")
         super().choose_date()
     
     def show_result(self):
         while True:
             time_ranges = self.sheet.get_available_times_for_date_and_service(self.info["date"], self.info["service"])
-            print(f"Available times for {self.info['service']} on {self.info['date']}:")
+            self.print_suggestion(f"Available times for {self.info['service']} on {self.info['date']}:")
             self.print_time_info(time_ranges)
-            print("Do you want to check availability for another date?")
+            self.print_suggestion("Do you want to check availability for another date?")
             yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
             if yes_no == "yes":
                 self.choose_date()
@@ -284,18 +283,15 @@ class TreatmentInfoFlow(BasicFlow):
     """Class to manage treatment information"""
 
     def run_flow(self):
-        self.choose_service(type=None)
+        self.choose_service(type_str=None)
         self.show_result()
         
     def show_result(self):
         for service in self.sheet.spa_info.get_all_records():
             if service["name"] == self.info["service"]:
-                print(f"Name: {service['name']}")
-                print(f"Duration: {service['duration']} hours")
-                print(f"Price: {service['price']} EUR")
-                print(f"Description: {service['description']}")
+                self.print_service_info(service)
                 break
-        print("Do you want to check information for another treatment?")
+        self.print_suggestion("Do you want to check information for another treatment?")
         yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
         if yes_no == "yes":
             self.run_flow()
