@@ -162,6 +162,7 @@ class BookingFlow(BasicFlow):
         self.print_suggestion("Please enter your name")
 
         name = input_handler("Enter your name:\n(it must contain only letters and 3 to 30 characters)", validate_name)
+        self.print_suggestion("Please enter your phone number.")
         phone_number = input_handler("Enter your phone number in format +353 111111111:",
                                      validate_phone_number)
         

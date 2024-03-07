@@ -45,8 +45,3 @@ class FormattedPhoneNumber(TestCase):
         with self.assertRaises(phonenumbers.phonenumberutil.NumberParseException) as err:
             formatted_phone_number(phone_number)
         self.assertEqual(str(err.exception), "(0) Missing or invalid default region.")
-
-
-# class TestBasicFlow(TestCase):
-#     def setUp(self):
-        
