@@ -280,8 +280,8 @@ class AvailabilityFlow(BasicFlow):
             break
 
 
-class TreatmentInfoFlow(BasicFlow):
-    """Class to manage treatment information"""
+class ServiceInfoFlow(BasicFlow):
+    """Class to manage service information"""
 
     def run_flow(self):
         self.choose_service(type_str=None)
@@ -292,7 +292,7 @@ class TreatmentInfoFlow(BasicFlow):
             if service["name"] == self.info["service"]:
                 self.print_service_info(service)
                 break
-        self.print_suggestion("Do you want to check information for another treatment?")
+        self.print_suggestion("Do you want to check information for another service?")
         yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
         if yes_no == "yes":
             self.run_flow()
@@ -302,10 +302,10 @@ class FlowController(PrintMixin):
     """Class to manage flow control"""
 
     FLOW_OPTIONS = (
-        {"name": "Book spa treatment", "object": BookingFlow},
+        {"name": "Book spa service", "object": BookingFlow},
         {"name": "Cancel booking", "object": CancelFlow},
         {"name": "Check availability", "object": AvailabilityFlow},
-        {"name": "Treatment information", "object": TreatmentInfoFlow},
+        {"name": "Service information", "object": ServiceInfoFlow},
     )
 
     def __init__(self, sheet: SpaSheet):
