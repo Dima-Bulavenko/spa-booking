@@ -1,15 +1,14 @@
-from datetime import datetime, timedelta
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 import phonenumbers
 
-from source.flow_controller import BasicFlow, formatted_phone_number, input_handler
+from source.flow_controller import formatted_phone_number, input_handler
 
 
-@patch("source.flow_controller.console.input")
-@patch("source.flow_controller.console.print")
 class InputHandler(TestCase):
+    @patch("source.flow_controller.console.input")
+    @patch("source.flow_controller.console.print")
     def test_valid_input(self, mock_print, mock_input):
         data = "Valid input"
         prompt_message = "Prompt message"
@@ -21,7 +20,8 @@ class InputHandler(TestCase):
         mock_print.assert_not_called()
         self.assertEqual(result, data)
     
-    def test_invalid_input(self, mock_print, mock_input):
+    @patch("source.flow_controller.console.input")
+    def test_invalid_input(self, mock_input):
         data = "valid input"
         invalid_data = "invalid input"
         prompt_message = "prompt message"

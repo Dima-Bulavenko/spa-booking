@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rich.align import Align
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
@@ -102,7 +101,7 @@ class PrintMixin:
         Args:
             service (dict): The service information
         """
-        name = Padding(Panel(Text(f"{service['name']}", justify="center", style="info"),title="Name"),
+        name = Padding(Panel(Text(f"{service['name']}", justify="center", style="info"), title="Name"),
                        (0, 0, 1, 0))
         console.print(name)
         duration = Padding(Panel(Text(f"{service['duration']} hours", justify="center", style="info"),

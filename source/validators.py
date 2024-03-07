@@ -122,7 +122,8 @@ def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb
         max_numb (int, optional): The maximum number allowed. Defaults to 3.
 
     Raises:
-        ValueError: If the integers are not space separated and if they are not all numbers between min_numb and max_numb inclusive
+        ValueError: If the integers are not space separated
+                    and if they are not all numbers between min_numb and max_numb inclusive
     """
     list_integers = [int(i) for i in integers.split()]
     

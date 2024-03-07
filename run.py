@@ -22,4 +22,5 @@ def main():
     FlowController(sheet)
 
 
-main()
+if __name__ == "__main__":
+    main()

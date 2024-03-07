@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from datetime import date, datetime, time, timedelta
 from time import sleep
+from typing import TYPE_CHECKING
 
 import phonenumbers
 from rich import print
@@ -9,7 +12,6 @@ from rich.panel import Panel
 from rich.text import Text
 
 from source.mixins import PrintMixin, console
-from source.sheet_manager import SpaSheet
 from source.validators import (
     validate_date,
     validate_integer_option,
@@ -19,6 +21,9 @@ from source.validators import (
     validate_time,
     validate_yes_no,
 )
+
+if TYPE_CHECKING:
+    from source.sheet_manager import SpaSheet
 
 
 def input_handler(prompt: str, validator: callable, *args, **kwargs) -> str:
@@ -63,7 +68,7 @@ def formatted_phone_number(phone_number: str) -> str:
 class BasicFlow(PrintMixin):
     """Class to manage basic flow"""
 
-    def __init__(self, sheet: SpaSheet, controller: "FlowController"):
+    def __init__(self, sheet: SpaSheet, controller: FlowController):
         self.sheet = sheet
         self.controller = controller
         self.info = {}
@@ -224,7 +229,8 @@ class CancelFlow(BasicFlow):
             user_bookings = self.look_for_booking()
             
             if not user_bookings:
-                self.print_suggestion(f"No bookings found for the provided name '{name}' and phone number '{phone_number}'.")
+                self.print_suggestion(f"No bookings found for the provided name '{name}' "
+                                      f"and phone number '{phone_number}'.")
                 self.print_suggestion("Do you want to try again?")
                 yes_no = input_handler("Enter 'yes' or 'no':", validate_yes_no)
                 if yes_no == "yes":
@@ -247,7 +253,7 @@ class CancelFlow(BasicFlow):
         user_bookings = self.info["user_bookings"]
         self.print_user_bookings(user_bookings)
         
-        booking_indexes_str = input_handler("Enter the numbers of the bookings you want to cancel separated by a space:",
+        booking_indexes_str = input_handler("Enter the numbers of the bookings you want to cancel separated by space:",
                                         validate_space_separated_integers, max_numb=len(user_bookings) - 1)
         booking_indexes = [int(index) for index in booking_indexes_str.split()]
         
