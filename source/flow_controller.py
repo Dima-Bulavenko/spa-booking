@@ -316,7 +316,6 @@ class FlowController(PrintMixin):
 
     def __init__(self, sheet: SpaSheet):
         self.sheet = sheet
-        self.current_flow = None
 
         self.print_suggestion("Welcome to the Spa Booking System")
 
