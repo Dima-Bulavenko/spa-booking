@@ -3,7 +3,14 @@ from unittest.mock import MagicMock, call, patch
 
 import phonenumbers
 
-from source.flow_controller import BasicFlow, BookingFlow, CancelFlow, FlowController, formatted_phone_number, input_handler
+from source.flow_controller import (
+    BasicFlow,
+    BookingFlow,
+    CancelFlow,
+    FlowController,
+    formatted_phone_number,
+    input_handler,
+)
 
 
 class InputHandler(TestCase):
@@ -282,3 +289,116 @@ class TestBookingFlow(TestCase):
         self.booking_flow.save_booking()
 
         self.booking_flow.sheet.booking_data.row_values.assert_called_once()
+
+
+class TestCancelFlow(TestCase):
+    @patch.object(CancelFlow, "run_flow")
+    def setUp(self, *_):
+        self.sheet = MagicMock()
+        self.controller = MagicMock()
+        self.cancel_flow = CancelFlow(self.sheet, self.controller)
+    
+    def test_run_flow(self):
+        with patch.object(CancelFlow, "input_credentials") as mock_input_credentials, \
+             patch.object(CancelFlow, "cancel_booking") as mock_cancel_booking, \
+             patch.object(CancelFlow, "show_success_message") as mock_show_success_message:
+            self.cancel_flow.run_flow()
+        
+        mock_input_credentials.assert_called_once()
+        mock_cancel_booking.assert_called_once()
+        mock_show_success_message.assert_called_once()
+
+    def test_input_credentials(self):
+        name = "Joe"
+        phone_number = "+353 123456789"
+        user_bookings = [
+            {
+                "service": "Test service",
+                "date": "2024-05-05",
+                "start_time": "12:00",
+                "end_time": "13:00",
+                "name": name,
+                "phone_number": phone_number,
+            },
+            {
+                "service": "Test service",
+                "date": "2024-06-05",
+                "start_time": "12:00",
+                "end_time": "13:00",
+                "name": name,
+                "phone_number": phone_number,
+            },
+        ]
+
+        with patch("source.flow_controller.input_handler") as mock_input_handler, \
+             patch.object(CancelFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(CancelFlow, "look_for_booking") as mock_look_for_booking:
+            mock_input_handler.side_effect = [name, phone_number]
+            mock_look_for_booking.return_value = user_bookings
+            self.cancel_flow.input_credentials()
+        
+        self.assertEqual(self.cancel_flow.info["name"], name)
+        self.assertEqual(self.cancel_flow.info["phone_number"], phone_number)
+        self.assertEqual(self.cancel_flow.info["user_bookings"], user_bookings)
+        self.assertEqual(mock_input_handler.call_count, 2)
+        self.assertEqual(mock_print_suggestion.call_count, 2)
+        mock_look_for_booking.assert_called_once()
+
+    def test_bookings_not_found(self):
+        name = "Joe"
+        phone_number = "+353 123456789"
+        user_bookings = []
+
+        with patch("source.flow_controller.input_handler") as mock_input_handler, \
+             patch.object(CancelFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(CancelFlow, "look_for_booking") as mock_look_for_booking:
+            mock_input_handler.side_effect = [name, phone_number, "yes",
+                                              name, phone_number, "no"]
+            mock_look_for_booking.return_value = user_bookings
+            self.cancel_flow.input_credentials()
+        
+        self.assertEqual(self.cancel_flow.info["name"], name)
+        self.assertEqual(self.cancel_flow.info["phone_number"], phone_number)
+        self.assertEqual(self.cancel_flow.info["user_bookings"], user_bookings)
+        self.assertEqual(mock_input_handler.call_count, 6)
+        self.assertEqual(mock_print_suggestion.call_count, 8)
+        self.assertEqual(mock_look_for_booking.call_count, 2)
+        self.controller.manage_options.assert_called_once()
+    
+    def test_look_for_booking(self):
+        name = "Joe"
+        phone_number = "+353 123456789"
+        self.cancel_flow.info = {
+            "name": name,
+            "phone_number": phone_number,
+        }
+
+        self.sheet.booking_data.get_all_records.return_value = [
+            {"name": name, "phone_number": 353123456789},
+            {"name": name, "phone_number": 353123456789},
+            {"name": "test_name", "phone_number": 353111111111},
+        ]
+
+        result = self.cancel_flow.look_for_booking()
+
+        self.sheet.booking_data.get_all_records.assert_called_once()
+        self.assertEqual(len(result), 2)
+    
+    def test_cancel_booking(self):
+        user_bookings = [
+            {"booking": {"name": "Joe"}, "row_number": 3},
+            {"booking": {"name": "Joe"}, "row_number": 5},
+        ]
+        self.cancel_flow.info["user_bookings"] = user_bookings
+        with patch.object(CancelFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(CancelFlow, "print_user_bookings") as mock_print_user_bookings, \
+             patch("source.flow_controller.input_handler") as mock_input_handler:
+            mock_input_handler.return_value = "0"
+
+            self.cancel_flow.cancel_booking()
+        
+        self.assertEqual(mock_input_handler.call_count, 1)
+        self.assertEqual(mock_print_suggestion.call_count, 1)
+        self.assertEqual(mock_print_user_bookings.call_count, 1)
+        self.sheet.booking_data.delete_rows.assert_called()
+
