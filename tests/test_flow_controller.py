@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, call, patch
 
 import phonenumbers
 
-from source.flow_controller import BasicFlow, FlowController, formatted_phone_number, input_handler
+from source.flow_controller import BasicFlow, BookingFlow, CancelFlow, FlowController, formatted_phone_number, input_handler
 
 
 class InputHandler(TestCase):
@@ -167,3 +167,118 @@ class TestBasicFlow(TestCase):
         mock_panel.assert_called_once()
         mock_clear.assert_called_once()
         mock_sleep.assert_called_once()
+
+
+class TestBookingFlow(TestCase):
+    @patch.object(BookingFlow, "run_flow")
+    def setUp(self, *_):
+        self.sheet = MagicMock()
+        self.controller = MagicMock()
+        self.booking_flow = BookingFlow(self.sheet, self.controller)
+    
+    def test_run_flow(self):
+        with patch.object(BookingFlow, "choose_service") as mock_choose_service, \
+             patch.object(BookingFlow, "choose_additional_services") as mock_choose_additional_services, \
+             patch.object(BookingFlow, "choose_date_time") as mock_choose_date_time, \
+             patch.object(BookingFlow, "input_credentials") as mock_input_credentials, \
+             patch.object(BookingFlow, "submit_or_change_booking_data") as mock_submit_change_booking, \
+             patch.object(BookingFlow, "save_booking") as mock_save_booking, \
+             patch.object(BookingFlow, "show_success_message") as mock_show_success_message:
+            
+            self.booking_flow.run_flow()
+
+        mock_choose_service.assert_called_once()
+        mock_choose_additional_services.assert_called_once()
+        mock_choose_date_time.assert_called_once()
+        mock_input_credentials.assert_called_once()
+        mock_submit_change_booking.assert_called_once()
+        mock_save_booking.assert_called_once()
+        mock_show_success_message.assert_called_once()
+
+    def test_choose_additional_services(self):
+        service_index = "0"
+        additional_services = [{"name": "Service 1"}, {"name": "Service 2"}]
+        with patch("source.flow_controller.input_handler") as mock_input_handler, \
+             patch.object(BookingFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(BookingFlow, "print_options") as mock_print_options:
+            
+            self.sheet.get_services.return_value = additional_services
+            mock_input_handler.side_effect = ["yes", service_index]
+            self.booking_flow.choose_additional_services()
+        
+        self.assertEqual(self.booking_flow.info["additional_service"],
+                         additional_services[int(service_index)]["name"])
+        self.assertEqual(mock_input_handler.call_count, 2)
+        self.assertEqual(mock_print_suggestion.call_count, 2)
+        mock_print_options.assert_called_once()
+    
+    def test_choose_date_time(self):
+        with patch.object(BookingFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(BookingFlow, "choose_date") as mock_choose_date, \
+             patch.object(BookingFlow, "choose_time") as mock_choose_time, \
+             patch.object(BookingFlow, "print_time_info") as mock_print_time_info:
+            self.booking_flow.info["date"] = "2024-05-05"
+            self.booking_flow.info["service"] = "Test service"
+            self.booking_flow.choose_date_time()
+
+        self.assertEqual(mock_print_suggestion.call_count, 2)
+        mock_choose_date.assert_called_once()
+        mock_choose_time.assert_called_once()
+        mock_print_time_info.assert_called_once()
+    
+    def test_input_credentials(self):
+        name = "Joe"
+        phone_number = "+353 123456789"
+        with patch.object(BookingFlow, "print_suggestion") as mock_print_suggestion, \
+             patch("source.flow_controller.input_handler") as mock_input_handler, \
+             patch("source.flow_controller.formatted_phone_number") as mock_formatted_phone_number:
+            mock_input_handler.side_effect = [name, phone_number]
+            mock_formatted_phone_number.return_value = phone_number
+
+            self.booking_flow.input_credentials()
+        
+        self.assertEqual(self.booking_flow.info["name"], name)
+        self.assertEqual(self.booking_flow.info["phone_number"], phone_number)
+        self.assertEqual(mock_input_handler.call_count, 2)
+        self.assertEqual(mock_print_suggestion.call_count, 2)
+        mock_formatted_phone_number.assert_called_once_with(phone_number)
+    
+    def test_submit_or_change_booking_data(self):
+        self.booking_flow.info = {
+            "service": "Test service",
+            "date": "2024-05-05",
+            "start_time": "12:00",
+            "end_time": "13:00",
+            "name": "Joe",
+            "phone_number": "+353 123456789",
+        }
+        service_index = "0"
+        with patch.object(BookingFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(BookingFlow, "choose_service") as mock_choose_service, \
+             patch.object(BookingFlow, "print_booking_info") as mock_print_booking_info, \
+             patch.object(BookingFlow, "print_options") as mock_print_options, \
+             patch("source.flow_controller.input_handler") as mock_input_handler:
+            mock_input_handler.side_effect = ["yes", service_index, "no"]
+            self.booking_flow.submit_or_change_booking_data()
+        
+        self.assertEqual(mock_print_suggestion.call_count, 5)
+        self.assertEqual(mock_print_booking_info.call_count, 2)
+        self.assertEqual(mock_input_handler.call_count, 3)
+        mock_choose_service.assert_called_once()
+        mock_print_options.assert_called_once()
+
+    def test_save_booking(self):
+        self.booking_flow.info = {
+            "service": "Test service",
+            "date": "2024-05-05",
+            "start_time": "12:00",
+            "end_time": "13:00",
+            "name": "Joe",
+            "phone_number": "+353 123456789",
+        }
+        booking_keys = MagicMock(return_value=self.booking_flow.info.keys())
+        self.booking_flow.sheet.booking_data.row_values.return_value = booking_keys
+        
+        self.booking_flow.save_booking()
+
+        self.booking_flow.sheet.booking_data.row_values.assert_called_once()
