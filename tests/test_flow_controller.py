@@ -9,6 +9,7 @@ from source.flow_controller import (
     BookingFlow,
     CancelFlow,
     FlowController,
+    ServiceInfoFlow,
     formatted_phone_number,
     input_handler,
 )
@@ -446,3 +447,38 @@ class TestAvailabilityFlow(TestCase):
         self.assertEqual(mock_print_suggestion.call_count, 4)
         self.assertEqual(mock_print_time_info.call_count, 2)
         mock_choose_date.assert_called_once()
+
+
+class TestServiceInfoFlow(TestCase):
+    @patch.object(ServiceInfoFlow, "run_flow")
+    def setUp(self, *_):
+        self.sheet = MagicMock()
+        self.controller = MagicMock()
+        self.service_info_flow = ServiceInfoFlow(self.sheet, self.controller)
+    
+    def test_run_flow(self):
+        with patch.object(ServiceInfoFlow, "choose_service") as mock_choose_service, \
+             patch.object(ServiceInfoFlow, "show_result") as mock_show_result:
+            
+            self.service_info_flow.run_flow()
+
+        mock_choose_service.assert_called_once()
+        mock_show_result.assert_called_once()
+    
+    def test_show_result(self):
+        name = "Turkish bath"
+        self.service_info_flow.info = {"service": name}
+        self.sheet.spa_info.get_all_records.return_value = [{"name": "Test service"}, {"name": "Turkish bath"}]
+        with patch.object(ServiceInfoFlow, "print_service_info") as mock_print_service_info, \
+             patch.object(ServiceInfoFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(ServiceInfoFlow, "run_flow") as mock_run_flow, \
+             patch("source.flow_controller.input_handler") as mock_input_handler:
+            mock_input_handler.return_value = "yes"
+            self.service_info_flow.show_result()
+        
+        self.sheet.spa_info.get_all_records.assert_called_once()
+        mock_print_service_info.assert_called_once()
+        mock_print_suggestion.assert_called_once()
+        mock_run_flow.assert_called_once()
+        mock_input_handler.assert_called_once()
+
