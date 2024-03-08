@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, call, patch
 import phonenumbers
 
 from source.flow_controller import (
+    AvailabilityFlow,
     BasicFlow,
     BookingFlow,
     CancelFlow,
@@ -402,3 +403,46 @@ class TestCancelFlow(TestCase):
         self.assertEqual(mock_print_user_bookings.call_count, 1)
         self.sheet.booking_data.delete_rows.assert_called()
 
+
+class TestAvailabilityFlow(TestCase):
+    @patch.object(AvailabilityFlow, "run_flow")
+    def setUp(self, *_):
+        self.sheet = MagicMock()
+        self.controller = MagicMock()
+        self.availability_flow = AvailabilityFlow(self.sheet, self.controller)
+
+    def test_run_flow(self):
+        with patch.object(AvailabilityFlow, "choose_service") as mock_choose_service, \
+             patch.object(AvailabilityFlow, "choose_date") as mock_choose_date, \
+             patch.object(AvailabilityFlow, "show_result") as mock_show_result:
+            
+            self.availability_flow.run_flow()
+        
+        mock_choose_service.assert_called_once()
+        mock_choose_date.assert_called_once()
+        mock_show_result.assert_called_once()
+    
+    def test_choose_date(self):
+        with patch.object(AvailabilityFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(BasicFlow, "choose_date") as mock_choose_date:
+            
+            self.availability_flow.choose_date()
+        
+        mock_print_suggestion.assert_called_once()
+        mock_choose_date.assert_called_once()
+    
+    def test_show_result(self):
+        self.sheet.get_available_times_for_date_and_service.return_value = ["time ranges"]
+        self.availability_flow.info = {"service": "Test service", "date": "2024-05-05"}
+        with patch.object(AvailabilityFlow, "print_suggestion") as mock_print_suggestion, \
+             patch.object(AvailabilityFlow, "print_time_info") as mock_print_time_info, \
+             patch("source.flow_controller.input_handler") as mock_input_handler, \
+             patch.object(AvailabilityFlow, "choose_date") as mock_choose_date:
+            
+            mock_input_handler.side_effect = ["yes", "no"]
+            self.availability_flow.show_result()
+        
+        self.assertEqual(mock_input_handler.call_count, 2)
+        self.assertEqual(mock_print_suggestion.call_count, 4)
+        self.assertEqual(mock_print_time_info.call_count, 2)
+        mock_choose_date.assert_called_once()
