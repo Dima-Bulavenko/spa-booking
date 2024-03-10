@@ -230,7 +230,9 @@ To check the test code coverage need to user two commands.
 
 ## PEP8 testing
 
-PEP8 is a document that provides guidelines and best practices on how to write Python code. To follow this document I used VSCode extensions such as [Ruff](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) and [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
+PEP8 validation was performed by using [Python linter](https://pep8ci.herokuapp.com/#). To follow PEP8 during development I used VSCode extensions such as [Ruff](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) and [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
+
+Check PEP8 validation [here](./docs/PEP8.md)
 
 # Bugs
 
