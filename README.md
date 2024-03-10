@@ -8,43 +8,40 @@ The primary objective of this project is to enhance Python skills. Additionally,
 
 # Contents
 
-- [User Experience UX](#user-experience-ux)
-  * [Target Audience](#target-audience)
-  * [User Stories](#user-stories)
-  * [Project Aims](#project-aims)
-- [Flowchart](#flowchart)
-- [Structure](#structure)
-  * [Sheet manager](#sheet-manager)
-  * [Flow manager](#flow-manager)
-  * [Validators](#validators)
-  * [Print manager](#print-manager)
-- [Features](#features)
-  * [Choose option](#choose-option)
-  * ["yes no" feature](#-yes-no--feature)
-  * [Choose date](#choose-date)
-  * [Choose time](#choose-time)
-  * [Get credentials](#get-credentials)
-  * [Change data](#change-data)
-  * [Booking](#booking)
-  * [Booking cancellation](#booking-cancellation)
-  * [Check available time](#check-available-time)
-  * [Service information](#service-information)
-- [Testing](#testing)
-  * [User stories testing](#user-stories-testing)
-  * [Unit testing](#unit-testing)
-  * [PEP8 testing](#pep8-testing)
-- [Bugs](#bugs)
-  * [Fixed Bugs](#fixed-bugs)
-  * [Unfixed Bugs](#unfixed-bugs)
-- [Technologies used](#technologies-used)
-- [Deploying](#deploying)
-- [How to Clone](#how-to-clone)
-- [Credits](#credits)
-  * [Content](#content)
-- [Acknowledgements](#acknowledgements)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
+-   [User Experience UX](#user-experience-ux)
+    -   [Target Audience](#target-audience)
+    -   [User Stories](#user-stories)
+    -   [Project Aims](#project-aims)
+-   [Flowchart](#flowchart)
+-   [Structure](#structure)
+    -   [Sheet manager](#sheet-manager)
+    -   [Flow manager](#flow-manager)
+    -   [Validators](#validators)
+    -   [Print manager](#print-manager)
+-   [Features](#features)
+    -   [Choose option](#choose-option)
+    -   ["yes no" feature](#-yes-no--feature)
+    -   [Choose date](#choose-date)
+    -   [Choose time](#choose-time)
+    -   [Get credentials](#get-credentials)
+    -   [Change data](#change-data)
+    -   [Booking](#booking)
+    -   [Booking cancellation](#booking-cancellation)
+    -   [Check available time](#check-available-time)
+    -   [Service information](#service-information)
+-   [Testing](#testing)
+    -   [User stories testing](#user-stories-testing)
+    -   [Unit testing](#unit-testing)
+    -   [PEP8 testing](#pep8-testing)
+-   [Bugs](#bugs)
+    -   [Fixed Bugs](#fixed-bugs)
+    -   [Unfixed Bugs](#unfixed-bugs)
+-   [Technologies used](#technologies-used)
+-   [Deploying](#deploying)
+-   [How to Clone](#how-to-clone)
+-   [Credits](#credits)
+    -   [Content](#content)
+-   [Acknowledgements](#acknowledgements)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -204,7 +201,7 @@ User can get information about a service.
 
 ## Unit testing
 
-Unit testing was performed by using built-in python library [unittest](https://docs.python.org/3/library/unittest.html). To run tests navigate to rood directory of the project and use commands:
+Unit testing was performed by using built-in python library [unittest](https://docs.python.org/3/library/unittest.html). To run tests navigate to root directory of the project and use commands:
 
 Windows:
 
@@ -217,6 +214,17 @@ Linux, Unix:
 ![unittests](./docs/images/unittests.PNG)
 
 Unittest coverage was checked with `coverage` python library.
+To check the test code coverage need to user two commands.
+
+1. This command run all tests under the `coverage` library:
+
+    `coverage run -m unittest`
+
+2. This command show report of coverage.
+
+    `coverage report`
+
+![unittests](./docs/images/coverage.PNG)
 
 [Back to top](#contents)
 

@@ -16,13 +16,17 @@ class SpaSheet:
         for work_sheet in self.sheet.worksheets():
             setattr(self, work_sheet.title, work_sheet)
 
-    def get_services(self, service_type: Literal[None, "main", "sub"] = None) -> list[dict]:
+    def get_services(
+        self, service_type: Literal[None, "main", "sub"] = None
+    ) -> list[dict]:
         """Get services from the sheet based on the service_type provided.
         If the service_type is None, it will return all services.
-        If the service_type is 'main' or 'sub' it will return services with respective type.
+        If the service_type is 'main' or 'sub' it will return
+        services with respective type.
 
         Args:
-            service_type (Literal[None, "main", "sub"], optional): type of service. Defaults to None.
+            service_type (Literal[None, "main", "sub"], optional): type of
+            service. Defaults to None.
 
         Returns:
             list[dict]: List of services
@@ -54,10 +58,12 @@ class SpaSheet:
         for service_data in services:
             if service_data["name"] == service:
                 return service_data[field_name]
-        
+
         return "Service not found"
 
-    def get_available_times_for_date_and_service(self, date_str: str, service: str) -> list[list[datetime]]:
+    def get_available_times_for_date_and_service(
+        self, date_str: str, service: str
+    ) -> list[list[datetime]]:
         """Calculates available ranges for booking and returns them.
 
         Args:
@@ -78,38 +84,49 @@ class SpaSheet:
         all_bookings = self.booking_data.get_all_records()
 
         # Define timedelta object for duration of selected service
-        service_duration = timedelta(hours=self.get_service_info(service, "duration"))
+        service_duration = timedelta(
+            hours=self.get_service_info(service, "duration")
+        )
 
         service_date_bookings = []
 
-        # Loop through all bookings and get the bookings for the service and date
+        # Loop through all bookings and get the bookings
+        # for the service and date
         for booking in all_bookings:
             booking_date_obj = date.fromisoformat(booking["date"])
             if booking["service"] == service and booking_date_obj == date_obj:
                 service_date_bookings.append(booking)
-        
+
         # Sort the bookings by start time
-        service_date_bookings.sort(key=lambda x: time().fromisoformat(x["start_time"]))
+        service_date_bookings.sort(
+            key=lambda x: time().fromisoformat(x["start_time"])
+        )
 
         available_times = []
         for index in range(len(service_date_bookings) + 1):
             if index == 0:
                 start_time = open_time
             else:
-                start_time = time.fromisoformat(service_date_bookings[index - 1]["end_time"])
-            
+                start_time = time.fromisoformat(
+                    service_date_bookings[index - 1]["end_time"]
+                )
+
             if index == len(service_date_bookings):
                 end_time = close_time
             else:
-                end_time = time.fromisoformat(service_date_bookings[index]["start_time"])
-            
+                end_time = time.fromisoformat(
+                    service_date_bookings[index]["start_time"]
+                )
+
             # Convert to datetime object to add the service duration
             start_time = datetime.combine(date_obj, start_time)
             end_time = datetime.combine(date_obj, end_time)
 
             # Create a ranges of available booking times
             while service_duration + start_time <= end_time:
-                available_times.append([start_time, start_time + service_duration])
+                available_times.append(
+                    [start_time, start_time + service_duration]
+                )
                 start_time += timedelta(hours=1)
-            
+
         return available_times

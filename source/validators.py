@@ -5,7 +5,9 @@ from datetime import date, datetime, time
 import phonenumbers
 
 
-def validate_integer_option(option: str, min_numb: int = 0, max_numb: int = 3) -> None:
+def validate_integer_option(
+    option: str, min_numb: int = 0, max_numb: int = 3
+) -> None:
     """Check if the option is a number between min_numb and max_numb inclusive
 
     Args:
@@ -14,18 +16,21 @@ def validate_integer_option(option: str, min_numb: int = 0, max_numb: int = 3) -
         max_numb (int, optional): The maximum number allowed. Defaults to 3.
 
     Raises:
-        ValueError: If the option is not a number between min_numb and max_numb inclusive
+        ValueError: If the option is not a number between min_numb
+        and max_numb inclusive
     """
 
     option = int(option)
 
     if not (min_numb <= option <= max_numb):
-        message = f"Please enter a number between {min_numb} and {max_numb} inclusive."
+        message = f"Please enter a number between {min_numb}"
+        f" and {max_numb} inclusive."
         raise ValueError(message)
 
 
 def validate_date(option: str):
-    """Check if the option is a date in format YYYY-MM-DD and if the date is not in the past
+    """Check if the option is a date in format YYYY-MM-DD
+    and if the date is not in the past
 
     Args:
         option (str): date string for validation
@@ -34,7 +39,10 @@ def validate_date(option: str):
     date_obj = date.fromisoformat(option)
 
     if date_obj < date.today():
-        message = f"Your date {date_obj.isoformat()} is in the past. Please enter a future date."
+        message = (
+            f"Your date {date_obj.isoformat()} is "
+            "in the past. Please enter a future date."
+        )
         raise ValueError(message)
 
 
@@ -61,7 +69,8 @@ def validate_time(option: str, time_ranges: list[list[datetime]]) -> None:
         time_ranges (list[list[datetime]]): List of available times
 
     Raises:
-        ValueError: If the option is not a number between 0 and the length of time_ranges list
+        ValueError: If the option is not a number between 0
+        and the length of time_ranges list
     """
 
     time_obj = time.fromisoformat(option)
@@ -81,7 +90,7 @@ def validate_name(name: str) -> None:
     Args:
         name (str): The word to check
     """
-    
+
     if not (3 <= len(name) <= 30):
         message = "The name must contain 3 to 30 characters."
         raise ValueError(message)
@@ -92,12 +101,12 @@ def validate_name(name: str) -> None:
 
 
 def validate_phone_number(phone_number: str) -> None:
-    """Check if the phone number is valid. The number must be in the format +CCC NNNNNNNNNN
-    where C is the country code and N is the number.
+    """Check if the phone number is valid. The number must be in
+    the format +CCC NNNNNNNNNN where C is the country code and N is the number.
 
     Args:
         phone_number (str): The phone number to check
-    
+
     Raises:
         ValueError: If the phone number is not valid
     """
@@ -112,9 +121,12 @@ def validate_phone_number(phone_number: str) -> None:
         raise ValueError(message)
 
 
-def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb: int = 3) -> None:
-    """Check if the integers are space separated, if they are all numbers between min_numb and max_numb inclusive,
-    if each number is entered only once and if there are no more than max_numb numbers.
+def validate_space_separated_integers(
+    integers: str, min_numb: int = 0, max_numb: int = 3
+) -> None:
+    """Check if the integers are space separated, if they are all numbers
+    between min_numb and max_numb inclusive, if each number is entered only
+    once and if there are no more than max_numb numbers.
 
     Args:
         integers (str): The integers to check
@@ -122,13 +134,15 @@ def validate_space_separated_integers(integers: str, min_numb: int = 0, max_numb
         max_numb (int, optional): The maximum number allowed. Defaults to 3.
 
     Raises:
-        ValueError: If the integers are not space separated
-                    and if they are not all numbers between min_numb and max_numb inclusive
+        ValueError: If the integers are not space separated and
+        if they are not all numbers between min_numb and max_numb inclusive
     """
     list_integers = [int(i) for i in integers.split()]
-    
+
     for integer in list_integers:
         validate_integer_option(integer, min_numb, max_numb)
         if list_integers.count(integer) > 1:
-            message = f"Please enter each number only once. {integer} is repeated."
+            message = (
+                f"Please enter each number only once. {integer} is repeated."
+            )
             raise ValueError(message)

@@ -12,5 +12,4 @@
 
 ![Show information about a service](./images/information_3.PNG)
 
-
 [Back to README](../README.md#service-information)

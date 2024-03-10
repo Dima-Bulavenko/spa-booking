@@ -13,12 +13,14 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
-print_theme = Theme({
-    "options": "green",
-    "error": "red",
-    "info": "blue bold",
-    "input": "purple",
-})
+print_theme = Theme(
+    {
+        "options": "green",
+        "error": "red",
+        "info": "blue bold",
+        "input": "purple",
+    }
+)
 
 console = Console(theme=print_theme)
 
@@ -51,7 +53,11 @@ class PrintMixin:
             times (list[list[datetime]]): List of available times
         """
 
-        table = Table("Start time", "End time", title=Text("Available times", style="info"))
+        table = Table(
+            "Start time",
+            "End time",
+            title=Text("Available times", style="info"),
+        )
         for time_range in time_ranges:
             start_time = Text(time_range[0].strftime("%H:%M"), style="options")
             end_time = Text(time_range[-1].strftime("%H:%M"), style="options")
@@ -66,20 +72,22 @@ class PrintMixin:
         """
         message = Panel.fit(Text(suggestion, style="info"))
         console.print(message)
-    
+
     def print_booking_info(self, booking_info: dict) -> None:
         """Prints the booking information.
 
         Args:
             booking_info (dict): The booking information
         """
-        table = Table(title=Text("Booking information", style="info"), show_header=False)
+        table = Table(
+            title=Text("Booking information", style="info"), show_header=False
+        )
         for key, value in booking_info.items():
             name = Text(f"{key}: ", style="info")
             data = Text(value, style="options")
             table.add_row(name, data, end_section=True)
         console.print(Padding(table, (1, 0)))
-    
+
     def print_user_bookings(self, bookings: list[dict]) -> None:
         """Prints the user bookings.
 
@@ -89,8 +97,11 @@ class PrintMixin:
         messages = []
         for index, booking_data in enumerate(bookings):
             booking = booking_data["booking"]
-            message = Text(f"{index}. {booking['service']} on {booking['date']} at {booking['start_time']}",
-                           style="options")
+            message = Text(
+                f"{index}. {booking['service']} on {booking['date']}"
+                f" at {booking['start_time']}",
+                style="options",
+            )
             messages.append(message)
         messages = Padding(Text("\n").join(messages), (0, 2, 0, 2))
         console.print(messages)
@@ -101,18 +112,43 @@ class PrintMixin:
         Args:
             service (dict): The service information
         """
-        name = Padding(Panel(Text(f"{service['name']}", justify="center", style="info"), title="Name"),
-                       (0, 0, 1, 0))
+        name = Padding(
+            Panel(
+                Text(f"{service['name']}", justify="center", style="info"),
+                title="Name",
+            ),
+            (0, 0, 1, 0),
+        )
         console.print(name)
-        duration = Padding(Panel(Text(f"{service['duration']} hours", justify="center", style="info"),
-                                 title="Duration"),
-                           (0, 0, 1, 0))
+        duration = Padding(
+            Panel(
+                Text(
+                    f"{service['duration']} hours",
+                    justify="center",
+                    style="info",
+                ),
+                title="Duration",
+            ),
+            (0, 0, 1, 0),
+        )
         console.print(duration)
-        price = Padding(Panel(Text(f"{service['price']} euro", justify="center", style="info"),
-                      title="Price"),
-                      (0, 0, 1, 0))
+        price = Padding(
+            Panel(
+                Text(
+                    f"{service['price']} euro", justify="center", style="info"
+                ),
+                title="Price",
+            ),
+            (0, 0, 1, 0),
+        )
         console.print(price)
-        description = Padding(Panel(Text(f"{service['description']}", justify="center", style="info"),
-                            title="Description"),
-                            (0, 0, 1, 0))
+        description = Padding(
+            Panel(
+                Text(
+                    f"{service['description']}", justify="center", style="info"
+                ),
+                title="Description",
+            ),
+            (0, 0, 1, 0),
+        )
         console.print(description)
